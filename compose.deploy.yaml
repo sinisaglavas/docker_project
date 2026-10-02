@@ -1,8 +1,6 @@
 services:
   web:
-    build:
-      context: .
-      dockerfile: ./docker/production/nginx/Dockerfile
+    image: sinisaglavas/docker-project-web:2.0
     restart: unless-stopped
     volumes:
       - laravel-storage-production:/var/www/storage:ro
@@ -16,11 +14,7 @@ services:
         condition: service_healthy
 
   php-fpm:
-    build:
-      context: .
-      dockerfile: ./docker/common/php-fpm/Dockerfile
-      target: production
-    image: myapp-php-fpm:prod
+    image: sinisaglavas/docker-project-php-fpm:2.0
     restart: unless-stopped
     volumes:
       - laravel-public-assets:/var/www/public/build
@@ -40,11 +34,7 @@ services:
           condition: service_completed_successfully
 
   migrate:
-    build:
-      context: .
-      dockerfile: ./docker/common/php-fpm/Dockerfile
-      target: production
-    image: myapp-php-fpm:prod
+    image: sinisaglavas/docker-project-php-fpm:2.0
     working_dir: /var/www
     command: php artisan migrate --force
     env_file:
