@@ -1,42 +1,52 @@
-
 name: CI/CD Pipeline
 
-on:
-  push:
-    branches:
-      - main
+  on:
+    push:
+      branches:
+        - main
 
-jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
+    workflow_dispatch:
 
-    steps:
-      # 1. Preuzimanje koda iz GitHub repozitorijuma
-      - name: Checkout code
-        uses: actions/checkout@v4
+  jobs:
+    build-and-push:
+      runs-on: ubuntu-latest
 
-      # 2. Prijava na Docker Hub koristeći Secrets
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
 
-      # 3. Automatski Build i Push za PHP-FPM sliku
-      - name: Build and Push PHP-FPM Image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./docker/common/php-fpm/Dockerfile
-          target: production
-          push: true
-          tags: sinisaglavas/docker-project-php-fpm:latest
+        - name: Log in to Docker Hub
+          uses: docker/login-action@v3
+          with:
+            username: ${{ secrets.DOCKERHUB_USERNAME }}
+            password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 4. Automatski Build i Push za Web/Nginx sliku
-      - name: Build and Push Nginx Image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./docker/production/nginx/Dockerfile
-          push: true
-          tags: sinisaglavas/docker-project-web:latest
+        - name: Build and Push PHP-FPM Image
+          uses: docker/build-push-action@v5
+          with:
+            context: .
+            file: ./docker/common/php-fpm/Dockerfile
+            target: production
+            push: true
+            tags: sinisaglavas/docker-project-php-fpm:latest
+
+        - name: Build and Push Nginx Image
+          uses: docker/build-push-action@v5
+          with:
+            context: .
+            file: ./docker/production/nginx/Dockerfile
+            push: true
+            tags: sinisaglavas/docker-project-web:latest
+
+    deploy:
+      needs: build-and-push
+      runs-on: self-hosted
+
+      steps:
+        - name: Deploy application on VM
+          run: |
+            cd /home/devops/docker_project
+            git pull --ff-only origin main
+            docker compose -f compose.deploy.yaml pull
+            docker compose -f compose.deploy.yaml up -d --remove-orphans
+            docker compose -f compose.deploy.yaml ps
