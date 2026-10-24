@@ -53,4 +53,6 @@ jobs:
           cd /home/devops/docker_project
           docker compose -f compose.deploy.yaml pull
           docker compose -f compose.deploy.yaml up -d --remove-orphans
+          docker compose -f compose.deploy.yaml exec -T php-fpm php artisan optimize:clear
+          docker compose -f compose.deploy.yaml exec -T php-fpm php artisan view:clear
           docker compose -f compose.deploy.yaml ps

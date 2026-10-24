@@ -11,7 +11,7 @@
     <p>git add .</p>
     <p>git commit -m "test: automatic deployment"</p>
     <p>git push origin main</p>
-    <h5>Posle komandi iznad proces je automatski pokrenuo: build-and-push → deploy</h5>
+    <h5>Posle komandi iznad proces je automatski pokrenuo: build-and-push -→ deploy</h5>
 
 </body>
 </html>

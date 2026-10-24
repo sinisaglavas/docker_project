@@ -1,0 +1,994 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+2 0 obj
+<< /Length 2985 >>
+stream
+BT
+/F1 8.2 Tf
+42 800 Td
+(CI/CD AUTOMATIZACIJA DOCKER PROJEKTA) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Ovaj vodic opisuje postupak od zavrsenog Docker projekta do automatskog build-a, objavljivanja) Tj
+0 -10.5 Td
+(  image-a na Docker Hub i deployment-a na virtuelnu masinu.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(1. CILJ AUTOMATIZACIJE) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Tok procesa:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    Izmena koda) Tj
+0 -10.5 Td
+(        |) Tj
+0 -10.5 Td
+(        v) Tj
+0 -10.5 Td
+(    git push origin main) Tj
+0 -10.5 Td
+(        |) Tj
+0 -10.5 Td
+(        v) Tj
+0 -10.5 Td
+(    GitHub Actions: build image-a) Tj
+0 -10.5 Td
+(        |) Tj
+0 -10.5 Td
+(        v) Tj
+0 -10.5 Td
+(    Docker Hub: novi image-i) Tj
+0 -10.5 Td
+(        |) Tj
+0 -10.5 Td
+(        v) Tj
+0 -10.5 Td
+(    Self-hosted runner na VM-u) Tj
+0 -10.5 Td
+(        |) Tj
+0 -10.5 Td
+(        v) Tj
+0 -10.5 Td
+(    docker compose pull i up -d) Tj
+0 -10.5 Td
+(        |) Tj
+0 -10.5 Td
+(        v) Tj
+0 -10.5 Td
+(    Nova verzija aplikacije na VM-u) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Automatizacija je uspesna kada posle obicnog push-a na main granu GitHub sam izgradi image-e,) Tj
+0 -10.5 Td
+(  posalje ih na Docker Hub i osvezi aplikaciju na VM-u.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(2. PRIPREMA DOCKER PROJEKTA) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Projekat treba da ima:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(- Dockerfile za aplikacioni servis, na primer PHP-FPM;) Tj
+0 -10.5 Td
+(- Dockerfile za web servis, na primer Nginx;) Tj
+0 -10.5 Td
+(- Compose fajl za development;) Tj
+0 -10.5 Td
+(- Compose fajl za deployment;) Tj
+0 -10.5 Td
+(- Git repozitorijum na GitHub-u;) Tj
+0 -10.5 Td
+(- Docker Hub repozitorijume za image-e.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Lokalno prvo proveriti development okruzenje:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    docker compose -f compose.dev.yaml up -d --build) Tj
+0 -10.5 Td
+(    docker compose -f compose.dev.yaml ps) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Zaustavljanje development okruzenja:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    docker compose -f compose.dev.yaml down --remove-orphans) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Deployment Compose fajl treba da koristi gotove image-e sa Docker Hub-a:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    services:) Tj
+0 -10.5 Td
+(      web:) Tj
+0 -10.5 Td
+(        image: sinisaglavas/docker-project-web:latest) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(      php-fpm:) Tj
+0 -10.5 Td
+(        image: sinisaglavas/docker-project-php-fpm:latest) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Development fajl moze koristiti build, dok deploy fajl treba da koristi image. Tako VM ne mora da) Tj
+0 -10.5 Td
+(  build-uje aplikaciju.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(3. DOCKER HUB) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Kreirati repozitorijume:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    sinisaglavas/docker-project-php-fpm) Tj
+0 -10.5 Td
+(    sinisaglavas/docker-project-web) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Kreirati Docker Hub Access Token sa pravom za push image-a. Token se ne upisuje direktno u workflow) Tj
+0 -10.5 Td
+ET
+endstream
+endobj
+3 0 obj
+<< /Length 2912 >>
+stream
+BT
+/F1 8.2 Tf
+42 800 Td
+(  i ne salje se u Git repozitorijum.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(4. GITHUB SECRETS) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(U GitHub repozitorijumu otvoriti:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    Settings -> Secrets and variables -> Actions) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Dodati:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    DOCKERHUB_USERNAME) Tj
+0 -10.5 Td
+(    DOCKERHUB_TOKEN) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(DOCKERHUB_TOKEN treba da bude Docker Hub Access Token, a ne obicna lozinka.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Produkcioni .env ne treba slati na GitHub. On ostaje na VM-u i mora biti u .gitignore fajlu.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(5. GITHUB ACTIONS WORKFLOW) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Workflow se cuva u:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    .github/workflows/deploy.yml) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Primer kompletnog workflow-a:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    name: CI/CD Pipeline) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    on:) Tj
+0 -10.5 Td
+(      push:) Tj
+0 -10.5 Td
+(        branches:) Tj
+0 -10.5 Td
+(          - main) Tj
+0 -10.5 Td
+(      workflow_dispatch:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    jobs:) Tj
+0 -10.5 Td
+(      build-and-push:) Tj
+0 -10.5 Td
+(        runs-on: ubuntu-latest) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(        steps:) Tj
+0 -10.5 Td
+(          - name: Checkout code) Tj
+0 -10.5 Td
+(            uses: actions/checkout@v4) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(          - name: Log in to Docker Hub) Tj
+0 -10.5 Td
+(            uses: docker/login-action@v3) Tj
+0 -10.5 Td
+(            with:) Tj
+0 -10.5 Td
+(              username: ${{ secrets.DOCKERHUB_USERNAME }}) Tj
+0 -10.5 Td
+(              password: ${{ secrets.DOCKERHUB_TOKEN }}) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(          - name: Build and Push PHP-FPM Image) Tj
+0 -10.5 Td
+(            uses: docker/build-push-action@v5) Tj
+0 -10.5 Td
+(            with:) Tj
+0 -10.5 Td
+(              context: .) Tj
+0 -10.5 Td
+(              file: ./docker/common/php-fpm/Dockerfile) Tj
+0 -10.5 Td
+(              target: production) Tj
+0 -10.5 Td
+(              push: true) Tj
+0 -10.5 Td
+(              tags: sinisaglavas/docker-project-php-fpm:latest) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(          - name: Build and Push Nginx Image) Tj
+0 -10.5 Td
+(            uses: docker/build-push-action@v5) Tj
+0 -10.5 Td
+(            with:) Tj
+0 -10.5 Td
+(              context: .) Tj
+0 -10.5 Td
+(              file: ./docker/production/nginx/Dockerfile) Tj
+0 -10.5 Td
+(              push: true) Tj
+0 -10.5 Td
+(              tags: sinisaglavas/docker-project-web:latest) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(      deploy:) Tj
+0 -10.5 Td
+(        needs: build-and-push) Tj
+0 -10.5 Td
+(        runs-on: self-hosted) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(        steps:) Tj
+0 -10.5 Td
+(          - name: Deploy application on VM) Tj
+0 -10.5 Td
+(            run: |) Tj
+0 -10.5 Td
+(              cd /home/devops/docker_project) Tj
+0 -10.5 Td
+ET
+endstream
+endobj
+4 0 obj
+<< /Length 3178 >>
+stream
+BT
+/F1 8.2 Tf
+42 800 Td
+(              docker compose -f compose.deploy.yaml pull) Tj
+0 -10.5 Td
+(              docker compose -f compose.deploy.yaml up -d --remove-orphans) Tj
+0 -10.5 Td
+(              docker compose -f compose.deploy.yaml ps) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(workflow_dispatch omogucava rucno pokretanje preko dugmeta Run workflow. Push na main omogucava) Tj
+0 -10.5 Td
+(  potpuno automatsko pokretanje. needs: build-and-push obezbeuje da deployment pocne tek kada su) Tj
+0 -10.5 Td
+(  image-i uspesno izgraeni i poslati na Docker Hub.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(6. PRIPREMA VM-A) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Proveriti Docker i Compose:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    docker --version) Tj
+0 -10.5 Td
+(    docker compose version) Tj
+0 -10.5 Td
+(    sudo systemctl status docker) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Projekat treba da postoji na istoj putanji koju koristi workflow:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    cd /home/devops/docker_project) Tj
+0 -10.5 Td
+(    git status) Tj
+0 -10.5 Td
+(    ls -la .env compose.deploy.yaml) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Na VM-u mora postojati produkcioni .env. Taj fajl ne treba slati na GitHub.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Prvi rucni deployment:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    docker compose -f compose.deploy.yaml pull) Tj
+0 -10.5 Td
+(    docker compose -f compose.deploy.yaml up -d) Tj
+0 -10.5 Td
+(    docker compose -f compose.deploy.yaml ps) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Pre automatizacije potvrditi da aplikacija radi preko IP adrese VM-a.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(7. INSTALACIJA SELF-HOSTED RUNNER-A) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Na GitHub-u otvoriti:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    Repository -> Settings -> Actions -> Runners -> New self-hosted runner) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Izabrati Linux -> x64. GitHub prikazuje komande za preuzimanje i konfiguraciju runner-a. Te komande) Tj
+0 -10.5 Td
+(  treba kopirati iz GitHub-a, jer se verzija runner-a menja.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Na VM-u koristiti poseban folder:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    mkdir -p ~/actions-runner) Tj
+0 -10.5 Td
+(    cd ~/actions-runner) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Posle raspakivanja pokrenuti GitHub-ovu konfiguracionu komandu:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    ./config.sh --url https://github.com/korisnik/repozitorijum --token NOVI_TOKEN) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Token je privremen i ne treba ga deliti ili objavljivati.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Testiranje:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    ./run.sh) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Ocekivane poruke:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    Connected to GitHub) Tj
+0 -10.5 Td
+(    Listening for Jobs) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(8. POKRETANJE RUNNER-A KAO SERVISA) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Rucno pokretanje sa ./run.sh radi samo dok je terminal otvoren.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Za automatski rad posle restarta VM-a, iz foldera u kome se nalazi run.sh pokrenuti:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    sudo ./svc.sh install) Tj
+0 -10.5 Td
+(    sudo ./svc.sh start) Tj
+0 -10.5 Td
+(    sudo ./svc.sh status) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Provera servisa:) Tj
+0 -10.5 Td
+ET
+endstream
+endobj
+5 0 obj
+<< /Length 2985 >>
+stream
+BT
+/F1 8.2 Tf
+42 800 Td
+() Tj
+0 -10.5 Td
+(    systemctl list-units 'actions.runner.*') Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Ako je status active \(running\), runner ce automatski raditi posle restarta VM-a.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Runner korisnik mora imati pristup Docker-u. Ako se pojavi permission denied:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    sudo usermod -aG docker $USER) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Posle toga odjaviti se i ponovo prijaviti ili restartovati VM.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(9. PRVI TEST AUTOMATIZACIJE) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Proveriti da je runner na GitHub-u Active ili Idle, zatim promeniti neki fajl i izvrsiti:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    git status) Tj
+0 -10.5 Td
+(    git add IZMENJENI_FAJL) Tj
+0 -10.5 Td
+(    git commit -m "test: automatic deployment") Tj
+0 -10.5 Td
+(    git push origin main) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Na GitHub-u otvoriti Actions -> CI/CD Pipeline.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Ocekivani job-ovi:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    build-and-push: success) Tj
+0 -10.5 Td
+(    deploy: success) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Ako prvi job uspe, image-i su na Docker Hub-u. Ako drugi uspe, VM je preuzeo image-e i pokrenuo novu) Tj
+0 -10.5 Td
+(  verziju.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(10. PROVERA DEPLOYMENT-A NA VM-U) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    cd /home/devops/docker_project) Tj
+0 -10.5 Td
+(    docker compose -f compose.deploy.yaml ps) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Logovi:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    docker compose -f compose.deploy.yaml logs --tail=100) Tj
+0 -10.5 Td
+(    docker compose -f compose.deploy.yaml logs --tail=100 web) Tj
+0 -10.5 Td
+(    docker compose -f compose.deploy.yaml logs --tail=100 php-fpm) Tj
+0 -10.5 Td
+(    docker compose -f compose.deploy.yaml logs --tail=100 mysql) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Provera image-a:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    docker images | grep docker-project) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Aplikaciju proveriti preko IP adrese VM-a.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(11. NAJCESCI PROBLEMI) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(YAML greska) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Proveriti da su name, on i jobs na pocetku reda i da se koriste razmaci, ne tabulatori.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(deploy je Queued) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Proveriti da runner radi i da postoji:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    Listening for Jobs) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(U workflow-u mora pisati:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    runs-on: self-hosted) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Git pull odbija deployment) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Deployment workflow ne mora da radi git pull ako compose.deploy.yaml vec postoji na VM-u i kod je) Tj
+0 -10.5 Td
+(  ugraen u Docker image. U tom slucaju koristiti samo:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    docker compose -f compose.deploy.yaml pull) Tj
+0 -10.5 Td
+(    docker compose -f compose.deploy.yaml up -d --remove-orphans) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+ET
+endstream
+endobj
+6 0 obj
+<< /Length 4030 >>
+stream
+BT
+/F1 8.2 Tf
+42 800 Td
+(CI/CD je uspesan, ali se promena ne vidi u aplikaciji) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Ovo se cesto desava kada GitHub Actions objavljuje image sa tagom latest, a compose.deploy.yaml na) Tj
+0 -10.5 Td
+(  VM-u koristi stariji tag, na primer 2.0.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Provera image tagova u Compose fajlu:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    cd /home/devops/docker_project) Tj
+0 -10.5 Td
+(    grep -n "image:" compose.deploy.yaml) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Komanda grep -n prikazuje linije koje sadrze image i broj linije na kojoj se nalaze. Rezultat treba) Tj
+0 -10.5 Td
+(  da koristi isti tag koji koristi GitHub Actions. Ako workflow objavljuje latest, u Compose fajlu) Tj
+0 -10.5 Td
+(  treba da bude:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    image: sinisaglavas/docker-project-web:latest) Tj
+0 -10.5 Td
+(    image: sinisaglavas/docker-project-php-fpm:latest) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Ako Compose fajl koristi 2.0, a workflow objavljuje latest, promeniti tagove:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    sed -i 's/:2\\.0/:latest/g' compose.deploy.yaml) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Komanda sed -i menja fajl direktno. Deo s/:2\\.0/:latest/g znaci da se svaka pojava taga :2.0 zameni) Tj
+0 -10.5 Td
+(  tagom :latest.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Proveriti da je izmena uspesna:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    grep -n "image:" compose.deploy.yaml) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Preuzeti najnovije image-e sa Docker Hub-a:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    docker compose -f compose.deploy.yaml pull) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Komanda pull preuzima image-e navedene u Compose fajlu. Bez ove komande VM moze nastaviti da koristi) Tj
+0 -10.5 Td
+(  staru lokalnu verziju image-a.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Ponovo kreirati kontejnere:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    docker compose -f compose.deploy.yaml up -d --force-recreate --remove-orphans) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Opcija -d pokrece kontejnere u pozadini. Opcija --force-recreate obavezno kreira nove kontejnere,) Tj
+0 -10.5 Td
+(  cak i kada Compose misli da promena nije potrebna. Opcija --remove-orphans uklanja kontejnere koji) Tj
+0 -10.5 Td
+(  vise nisu definisani u trenutnom Compose fajlu.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Proveriti koji image-i se stvarno koriste:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    docker compose -f compose.deploy.yaml images) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Ova komanda prikazuje image-e koje koriste aktivni Compose servisi. Treba proveriti da li je tag) Tj
+0 -10.5 Td
+(  latest, a ne stari tag 2.0.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Ocistiti Laravel cache nakon promene Blade fajla:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    docker compose -f compose.deploy.yaml exec -T php-fpm php artisan optimize:clear) Tj
+0 -10.5 Td
+(    docker compose -f compose.deploy.yaml exec -T php-fpm php artisan view:clear) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Prva komanda cisti Laravel konfiguracioni, route, event i application cache. Druga brise) Tj
+0 -10.5 Td
+(  kompajlirane Blade view fajlove. Opcija -T iskljucuje pseudo-terminal, sto je potrebno kada se) Tj
+0 -10.5 Td
+(  komanda izvrsava iz GitHub Actions workflow-a.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Proveriti da li je novi fajl zaista u aktivnom kontejneru:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    docker compose -f compose.deploy.yaml exec -T php-fpm php -r 'echo) Tj
+0 -10.5 Td
+(  strpos\(file_get_contents\("resources/views/welcome.blade.php"\), "NOVI_TEKST"\) !== false ? "FOUND\\n") Tj
+0 -10.5 Td
+(  : "NOT FOUND\\n";') Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Zameniti NOVI_TEKST delom teksta koji je dodat u welcome.blade.php. Rezultat FOUND znaci da aktivni) Tj
+0 -10.5 Td
+(  kontejner sadrzi novu verziju fajla. Rezultat NOT FOUND znaci da je pokrenut stari image ili da) Tj
+0 -10.5 Td
+(  izmena nije bila deo GitHub commit-a.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Ako komanda exec prijavi da php-fpm nije pokrenut, proveriti sve kontejnere:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    docker compose -f compose.deploy.yaml ps -a) Tj
+0 -10.5 Td
+ET
+endstream
+endobj
+7 0 obj
+<< /Length 3356 >>
+stream
+BT
+/F1 8.2 Tf
+42 800 Td
+() Tj
+0 -10.5 Td
+(Status Healthy ili Up znaci da servis radi. Status Exited \(0\) za migrate je normalan, jer je migrate) Tj
+0 -10.5 Td
+(  jednokratni servis koji se zaustavlja posle uspesnih migracija. Ako je php-fpm zaustavljen,) Tj
+0 -10.5 Td
+(  pogledati logove:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    docker compose -f compose.deploy.yaml logs --tail=100 php-fpm) Tj
+0 -10.5 Td
+(    docker compose -f compose.deploy.yaml logs --tail=100 migrate) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Na kraju uraditi potpuno osvezavanje browsera:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    Ctrl + F5) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Za trajno resenje, tagovi u workflow-u i compose.deploy.yaml moraju uvek biti usklaeni. Ako workflow) Tj
+0 -10.5 Td
+(  objavljuje latest, deployment Compose fajl treba da koristi latest. Izmenu compose.deploy.yaml) Tj
+0 -10.5 Td
+(  treba commit-ovati na GitHub da bi konfiguracija ostala dokumentovana i dostupna na svim masinama.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(No space left on device) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Provera:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    df -h) Tj
+0 -10.5 Td
+(    docker system df) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Bezbednije ciscenje:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    docker container prune) Tj
+0 -10.5 Td
+(    docker image prune -a) Tj
+0 -10.5 Td
+(    sudo apt clean) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Ne koristiti rutinski:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    docker system prune -a --volumes) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(jer moze obrisati volume-e i podatke baze.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Push je odbijen jer je remote ispred lokalne grane) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Sacuvati lokalne izmene, preuzeti remote izmene, pa vratiti stash:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    git stash push -u -m "local changes before syncing main") Tj
+0 -10.5 Td
+(    git pull --ff-only origin main) Tj
+0 -10.5 Td
+(    git stash pop) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Ako se pojavi konflikt:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(    git status) Tj
+0 -10.5 Td
+(    git diff --name-only --diff-filter=U) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Ne koristiti git push --force bez jasnog razloga.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(12. BEZBEDNOSNE PREPORUKE) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(- .env, lozinke i tokeni ne smeju biti u Git repozitorijumu.) Tj
+0 -10.5 Td
+(- Docker Hub token koristiti kroz GitHub Secrets.) Tj
+0 -10.5 Td
+(- Runner token ne deliti u screenshot-u ili poruci.) Tj
+0 -10.5 Td
+(- Ne koristiti docker compose down -v bez provere, jer moze obrisati bazu.) Tj
+0 -10.5 Td
+(- Ne koristiti git reset --hard ako izmene nisu sacuvane.) Tj
+0 -10.5 Td
+(- Za ozbiljniji projekat koristiti immutable tag, na primer Git commit SHA, umesto samo latest.) Tj
+0 -10.5 Td
+(- Redovno proveravati slobodan prostor VM-a.) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(13. KONACNA KONTROLNA LISTA) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(Automatizacija je zavrsena kada:) Tj
+0 -10.5 Td
+() Tj
+0 -10.5 Td
+(- projekat postoji na GitHub-u;) Tj
+0 -10.5 Td
+(- Dockerfile-i uspesno grade image-e;) Tj
+0 -10.5 Td
+(- image-i postoje na Docker Hub-u;) Tj
+0 -10.5 Td
+(- GitHub Secrets su podeseni;) Tj
+0 -10.5 Td
+(- workflow postoji u .github/workflows/deploy.yml;) Tj
+0 -10.5 Td
+(- workflow ima build-and-push job;) Tj
+0 -10.5 Td
+(- workflow ima deploy job sa runs-on: self-hosted;) Tj
+0 -10.5 Td
+(- VM ima Docker i Compose;) Tj
+0 -10.5 Td
+ET
+endstream
+endobj
+8 0 obj
+<< /Length 337 >>
+stream
+BT
+/F1 8.2 Tf
+42 800 Td
+(- VM ima .env i compose.deploy.yaml;) Tj
+0 -10.5 Td
+(- self-hosted runner je registrovan;) Tj
+0 -10.5 Td
+(- runner radi kao systemd servis;) Tj
+0 -10.5 Td
+(- build-and-push i deploy su zeleni na GitHub-u;) Tj
+0 -10.5 Td
+(- aplikacija je dostupna preko IP adrese VM-a posle git push origin main.) Tj
+0 -10.5 Td
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Pages /Kids [10 0 R 11 0 R 12 0 R 13 0 R 14 0 R 15 0 R 16 0 R] /Count 7 >>
+endobj
+10 0 obj
+<< /Type /Page /Parent 9 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 2 0 R >>
+endobj
+11 0 obj
+<< /Type /Page /Parent 9 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 3 0 R >>
+endobj
+12 0 obj
+<< /Type /Page /Parent 9 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 4 0 R >>
+endobj
+13 0 obj
+<< /Type /Page /Parent 9 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 5 0 R >>
+endobj
+14 0 obj
+<< /Type /Page /Parent 9 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 6 0 R >>
+endobj
+15 0 obj
+<< /Type /Page /Parent 9 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 7 0 R >>
+endobj
+16 0 obj
+<< /Type /Page /Parent 9 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 8 0 R >>
+endobj
+17 0 obj
+<< /Type /Catalog /Pages 9 0 R >>
+endobj
+xref
+0 18
+0000000000 65535 f 
+0000000015 00000 n 
+0000000085 00000 n 
+0000003122 00000 n 
+0000006086 00000 n 
+0000009316 00000 n 
+0000012353 00000 n 
+0000016435 00000 n 
+0000019843 00000 n 
+0000020231 00000 n 
+0000020331 00000 n 
+0000020458 00000 n 
+0000020585 00000 n 
+0000020712 00000 n 
+0000020839 00000 n 
+0000020966 00000 n 
+0000021093 00000 n 
+0000021220 00000 n 
+trailer
+<< /Size 18 /Root 17 0 R >>
+startxref
+21270
+%%EOF
