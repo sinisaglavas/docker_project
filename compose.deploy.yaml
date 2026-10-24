@@ -1,6 +1,6 @@
 services:
   web:
-    image: sinisaglavas/docker-project-web:2.0
+    image: sinisaglavas/docker-project-web:latest
     restart: unless-stopped
     volumes:
       - laravel-storage-production:/var/www/storage:ro
@@ -14,7 +14,7 @@ services:
         condition: service_healthy
 
   php-fpm:
-    image: sinisaglavas/docker-project-php-fpm:2.0
+    image: sinisaglavas/docker-project-php-fpm:latest
     restart: unless-stopped
     volumes:
       - laravel-public-assets:/var/www/public/build
@@ -34,7 +34,7 @@ services:
           condition: service_completed_successfully
 
   migrate:
-    image: sinisaglavas/docker-project-php-fpm:2.0
+    image: sinisaglavas/docker-project-php-fpm:latest
     working_dir: /var/www
     command: php artisan migrate --force
     env_file:
