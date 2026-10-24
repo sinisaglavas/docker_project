@@ -1,3 +1,4 @@
+
 name: CI/CD Pipeline
 
 on:
@@ -50,7 +51,6 @@ jobs:
       - name: Deploy application on VM
         run: |
           cd /home/devops/docker_project
-          git pull --ff-only origin main
           docker compose -f compose.deploy.yaml pull
           docker compose -f compose.deploy.yaml up -d --remove-orphans
           docker compose -f compose.deploy.yaml ps
